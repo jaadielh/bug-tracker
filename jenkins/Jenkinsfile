@@ -1,22 +1,3 @@
-#jenkins pipeline {
-#     agent any environment { GOPATH = '/go' }
-#     
-#     stages { stage('Unit Tests Backend') {
-#         agent { 
-#            docker { 
-#                image 'golang:1.21-alpine' 
-#                reuseNode true
-#                 } 
-#            } 
-#            steps { 
-#                dir('bugtracker-backend') {
-#                     sh 'go test -v ./...' 
-#                } 
-#            }
-#         }
-#     }
-# }
-
 pipeline {
     GOPATH 
     agent any
