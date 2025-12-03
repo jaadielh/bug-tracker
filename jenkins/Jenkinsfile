@@ -28,8 +28,13 @@ pipeline {
                     sh '''
                       npm ci
                       npm test
-                      
+
                     '''
+                }
+            }
+            post {
+                always {
+                    junit 'backtracker-frontend/test-testresults.xml'
                 }
             }
         }
