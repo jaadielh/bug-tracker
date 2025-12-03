@@ -16,18 +16,19 @@ pipeline {
             }
         }
 
-        stage ('Unit Test - Frontend') {
+        stage('Unit Test - Frontend') {
             agent {
                 docker {
                     image 'node:20-alpine'
-                    reuseNode True
+                    reuseNode true
                 }
             }
-            Steps {
+            steps {
                 dir('bugtacker-frontend') {
                     sh '''
                       npm ci
                       npm test
+                      
                     '''
                 }
             }
