@@ -5,7 +5,7 @@ pipeline {
         stage('Unit Tests Backend') {
             agent {
                 docker {
-                    image 'snakee/golang-junit:1.21'
+                    image 'europe-west1-docker.pkg.dev/indra-gcp/cloud-run-source-deploy/bugtracker-backend:latest'
                     reuseNode true
                 }
             }
