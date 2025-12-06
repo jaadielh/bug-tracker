@@ -31,7 +31,7 @@ services:
     networks:
       - bugtracker
     healthcheck:
-      test: ["CMD", "wget", "-O", "-", "http://localhost:8080/api/health"]
+      test: ["CMD", "wget", "-O", "-", "http://localhost:8081/api/health"]
       interval: 10s
       timeout: 5s
       retries: 3
