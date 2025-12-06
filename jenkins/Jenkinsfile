@@ -37,7 +37,6 @@ pipeline {
                 }
             }
         
-
         stage('Unit Test - Frontend') {
             agent {
                 docker {
@@ -51,6 +50,7 @@ pipeline {
                       npm ci
                       npm test
                       mkdir -p reports
+                      mkdir -p reports/coverage
                       mv coverage reports/
                     '''
                 }
