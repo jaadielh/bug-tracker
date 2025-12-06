@@ -36,7 +36,7 @@ pipeline {
                 }
                 }
             }
-        }
+        
 
         stage('Unit Test - Frontend') {
             agent {
@@ -67,5 +67,6 @@ pipeline {
             }
         }
     }
+}
 
 
