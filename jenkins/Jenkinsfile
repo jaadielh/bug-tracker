@@ -21,6 +21,8 @@ pipeline {
                         mkdir -p reports
                         mv coverage.html reports/ 
                     '''
+
+
                 }
             }
             post {
@@ -28,9 +30,10 @@ pipeline {
                     junit 'bugtacker-backend/test-results.xml'
                     publishHTML target: [
                        reportDir: 'bugtracker-backend/reports',
-                       reportFiles: 'coverage.html'
+                       reportFiles: 'coverage.html',
                        reportName: 'Backend Coverage Report'
                     ]
+                }
                 }
             }
         }
