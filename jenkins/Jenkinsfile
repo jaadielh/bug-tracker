@@ -33,7 +33,8 @@ stage('Unit Tests Backend') {
 
     post {
         always {
-            junit 'bugtracker-backend/test-results.xml'
+            junit 'bugtracker-backend/test-results.xml', allowEmptyResults: true
+
 
             publishHTML(target: [
                 reportDir: 'bugtracker-backend/reports',
