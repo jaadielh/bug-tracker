@@ -2,31 +2,33 @@ pipeline {
     agent any
 
     stages {
+stage('Execute Unit Tests') {
+    parallel {
 
-stage('Unit Tests Backend') {
-    agent {
-        docker {
-            image 'golang:1.24-alpine'
-            reuseNode true
+            stage('Unit Tests Backend') {
+                agent {
+                    docker {
+                         image 'golang:1.24-alpine'
+                            reuseNode true
         }
     }
 
-    steps {
-        dir('bugtracker-backend') {
-            sh '''
-                export GOCACHE=$WORKSPACE/.gocache
-                mkdir -p $GOCACHE
+            steps {
+                dir('bugtracker-backend') {
+                    sh '''
+                        export GOCACHE=$WORKSPACE/.gocache
+                        mkdir -p $GOCACHE
 
-                go install github.com/jstemmer/go-junit-report/v2@latest
+                        go install github.com/jstemmer/go-junit-report/v2@latest
 
-                go test -v ./... 2>&1 | go-junit-report -set-exit-code > test-results.xml
+                        go test -v ./... 2>&1 | go-junit-report -set-exit-code > test-results.xml
 
-                go test -coverprofile=coverage.out -covermode=atomic ./...
-                go tool cover -html=coverage.out -o coverage.html
+                        go test -coverprofile=coverage.out -covermode=atomic ./...
+                        go tool cover -html=coverage.out -o coverage.html
 
-                mkdir -p reports
-                mv coverage.html reports/
-            '''
+                        mkdir -p reports
+                        mv coverage.html reports/
+                    '''
 
         }
     }
@@ -44,13 +46,12 @@ stage('Unit Tests Backend') {
                 keepAll: true,
                 alwaysLinkToLastBuild: true,
                 allowMissing: false
-            ])
+                    ])
+                }
+            }
         }
-    }
-}
 
-
-        stage('Unit Test - Frontend') {
+                stage('Unit Test - Frontend') {
             agent {
                 docker {
                     image 'node:20-alpine'
@@ -73,16 +74,22 @@ stage('Unit Tests Backend') {
                 always {
                     junit 'bugtracker-frontend/test-results.xml'
 
-                    publishHTML(target: [
-                        reportDir: 'bugtracker-frontend/reports/coverage',
-                        reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
+                        publishHTML(target: [
+                            reportDir: 'bugtracker-frontend/reports/coverage',
+                            reportFiles: 'index.html',
+                            reportName: 'Frontend Coverage Report',
+                            keepAll: true,
+                            alwaysLinkToLastBuild: true,
+                            allowMissing: false
+                         ])
+                        }
+                    }
                 }
             }
         }
+
     }
 }
+
+
+
