@@ -2,6 +2,7 @@ pipeline {
     agent any
 
     stages {
+
         stage('Unit Tests Backend') {
             agent {
                 docker {
@@ -9,34 +10,37 @@ pipeline {
                     reuseNode true
                 }
             }
+
             steps {
                 dir('bugtracker-backend') {
                     sh '''
                         go test -v ./... 2>&1 | go-junit-report > test-results.xml
 
-                        #Generate coverage report
-                        go test -coverageprofile=coverage.out -covermode=atomic ./...
+                        go test -coverprofile=coverage.out -covermode=atomic ./...
                         go tool cover -html=coverage.out -o coverage.html
 
                         mkdir -p reports
-                        mv coverage.html reports/ 
+                        mv coverage.html reports/
                     '''
-
-
                 }
             }
+
             post {
                 always {
-                    junit 'bugtacker-backend/test-results.xml'
-                    publishHTML target: [
-                       reportDir: 'bugtracker-backend/reports',
-                       reportFiles: 'coverage.html',
-                       reportName: 'Backend Coverage Report'
-                    ]
-                }
+                    junit 'bugtracker-backend/test-results.xml'
+
+                    publishHTML(target: [
+                        reportDir: 'bugtracker-backend/reports',
+                        reportFiles: 'coverage.html',
+                        reportName: 'Backend Coverage Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
+                    ])
                 }
             }
-        
+        }
+
         stage('Unit Test - Frontend') {
             agent {
                 docker {
@@ -44,29 +48,32 @@ pipeline {
                     reuseNode true
                 }
             }
+
             steps {
-                dir('bugtacker-frontend') {
+                dir('bugtracker-frontend') {
                     sh '''
                       npm ci
                       npm test
                       mkdir -p reports
-                      mkdir -p reports/coverage
                       mv coverage reports/
                     '''
                 }
             }
+
             post {
                 always {
-                    junit 'bugtracker-frontend/test-testresults.xml'
-                    publishHTML target [
+                    junit 'bugtracker-frontend/test-results.xml'
+
+                    publishHTML(target: [
                         reportDir: 'bugtracker-frontend/reports/coverage',
                         reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report'
-                    ]
+                        reportName: 'Frontend Coverage Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
+                    ])
                 }
             }
         }
     }
 }
-
-
