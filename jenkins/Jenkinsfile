@@ -3,43 +3,43 @@ pipeline {
 
     stages {
 
-        stage('Unit Tests Backend') {
-            agent {
-                docker {
-                    image 'golang:1.24-alpine'
-                    reuseNode true
-                }
-            }
-
-            steps {
-                dir('bugtracker-backend') {
-                    sh '''
-                        go test -v ./... 2>&1 | go-junit-report > test-results.xml
-
-                        go test -coverprofile=coverage.out -covermode=atomic ./...
-                        go tool cover -html=coverage.out -o coverage.html
-
-                        mkdir -p reports
-                        mv coverage.html reports/
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit 'bugtracker-backend/test-results.xml'
-
-                    publishHTML(target: [
-                        reportDir: 'bugtracker-backend/reports',
-                        reportFiles: 'coverage.html',
-                        reportName: 'Backend Coverage Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
+stage('Unit Tests Backend') {
+    agent {
+        docker {
+            image 'golang:1.24-alpine'
+            reuseNode true
         }
+    }
+
+    steps {
+        dir('bugtracker-backend') {
+            sh '''
+                go test -v ./...
+
+                go test -coverprofile=coverage.out -covermode=atomic ./...
+                go tool cover -html=coverage.out -o coverage.html
+
+                mkdir -p reports
+                mv coverage.html reports/
+            '''
+        }
+    }
+
+    post {
+        always {
+            junit 'bugtracker-backend/test-results.xml'
+
+            publishHTML(target: [
+                reportDir: 'bugtracker-backend/reports',
+                reportFiles: 'coverage.html',
+                reportName: 'Backend Coverage Report',
+                keepAll: true,
+                alwaysLinkToLastBuild: true,
+                allowMissing: false
+            ])
+        }
+    }
+}
 
         stage('Unit Test - Frontend') {
             agent {
