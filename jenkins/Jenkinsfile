@@ -64,7 +64,7 @@ stage('Unit Tests Backend') {
                       npm ci
                       npm test
                       mkdir -p reports
-                      mv coverage reports/
+                      rm -rf reports/coverage && mv coverage reports/
                     '''
                 }
             }
