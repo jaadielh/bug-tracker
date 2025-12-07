@@ -87,6 +87,11 @@ stage('Execute Unit Tests') {
                 }
             }
         }
+        post {
+            always {
+                cleanWs()
+            }
+        }
 
     }
 }
