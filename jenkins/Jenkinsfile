@@ -17,7 +17,9 @@ stage('Unit Tests Backend') {
                 export GOCACHE=$WORKSPACE/.gocache
                 mkdir -p $GOCACHE
 
-                go test -v ./...
+                go install github.com/jstemmer/go-junit-report/v2@latest
+
+                go test -v ./... 2>&1 | go-junit-report -set-exit-code > test-results.xml
 
                 go test -coverprofile=coverage.out -covermode=atomic ./...
                 go tool cover -html=coverage.out -o coverage.html
@@ -25,6 +27,7 @@ stage('Unit Tests Backend') {
                 mkdir -p reports
                 mv coverage.html reports/
             '''
+
         }
     }
 
