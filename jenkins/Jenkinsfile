@@ -14,6 +14,9 @@ stage('Unit Tests Backend') {
     steps {
         dir('bugtracker-backend') {
             sh '''
+                export GOCACHE=$WORKSPACE/.gocache
+                mkdir -p $GOCACHE
+
                 go test -v ./...
 
                 go test -coverprofile=coverage.out -covermode=atomic ./...
@@ -40,6 +43,7 @@ stage('Unit Tests Backend') {
         }
     }
 }
+
 
         stage('Unit Test - Frontend') {
             agent {
