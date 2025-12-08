@@ -97,11 +97,16 @@ pipeline {
                 }
             }
             steps {
-                dir('test-api') {
-                    sh 'npx wait-port http://localhost:8080/api/health -t 30000'
-                    sh 'npm install'
-                    sh 'npx playwright test'
-                }
+                dir("test-api") {
+                    sh """
+                        if [ ! -f package.json ]; then
+                            echo "ERROR: package.json not found in test-api"
+                            exit 1
+                        fi
+                        npm install
+                        npx playwright test
+                    """
+}
             }
     
             post {
