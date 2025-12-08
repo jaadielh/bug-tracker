@@ -108,7 +108,7 @@ pipeline {
                 always {
                     junit 'test-api/**/results.xml'
                     publishHTML(target: [
-                        reportDir: 'test-api/playwright-report',
+                        reportDir: 'tests-api/playwright-report',
                         reportFiles: 'index.html',
                         reportName: 'Playwright API Test Report'
                     ])
