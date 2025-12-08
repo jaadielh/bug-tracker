@@ -6,7 +6,7 @@ pipeline {
         stage('Unit Tests Backend') {
             agent {
                 docker {
-                    image 'golang:1.24-alpine'
+                    image 'golang:1.22-alpine'
                     reuseNode true
                 }
             }
@@ -65,15 +65,16 @@ pipeline {
 
             post {
                 always {
-                    junit 'reports/junit.xml'
+                    junit 'bugtracker-frontend/reports/junit.xml'
                     publishHTML(target: [
-                        reportDir: 'reports/coverage',
+                        reportDir: 'bugtracker-frontend/reports/coverage',
                         reportFiles: 'index.html',
                         reportName: 'Frontend Coverage Report'
                     ])
                 }
             }
         }
+
         stage ('Launch Application') {
             agent {
                 docker {
@@ -83,7 +84,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'docker compose up --buld -d'
+                sh 'docker compose up --build -d'
             }
         }
     }
