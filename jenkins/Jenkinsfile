@@ -99,17 +99,16 @@ pipeline {
             steps {
                 dir('test-api') {
                     sh 'npx wait-port http://localhost:8080/api/health -t 30000'
-
-                    sh 'npm ci'
+                    sh 'npm install'
                     sh 'npx playwright test'
                 }
             }
-            
+    
             post {
                 always {
-                    junit 'test-api/test-results/results.xml'
-                    publishHTML (target: [
-                        reportDir: 'tests-api/playwright-report',
+                    junit 'test-api/**/results.xml'
+                    publishHTML(target: [
+                        reportDir: 'test-api/playwright-report',
                         reportFiles: 'index.html',
                         reportName: 'Playwright API Test Report'
                     ])
