@@ -65,9 +65,9 @@ pipeline {
 
             post {
                 always {
-                    junit 'bugtracker-frontend/test-testresults.xml'
+                    junit 'reports/junit.xml'
                     publishHTML(target: [
-                        reportDir: 'bugtracker-frontend/reports/coverage',
+                        reportDir: 'reports/coverage',
                         reportFiles: 'index.html',
                         reportName: 'Frontend Coverage Report'
                     ])

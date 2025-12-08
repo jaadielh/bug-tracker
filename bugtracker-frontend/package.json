@@ -38,8 +38,8 @@
     "typescript": "^5"
   },
   "jest-junit": {
-    "outputDirectory": ".",
-    "outputName": "test-results.xml",
+    "outputDirectory": "./reports",
+    "outputName": "junit.xml",
     "ancestorSeparator": " › ",
     "uniqueOutputName": "false",
     "suiteNameTemplate": "{filepath}",
