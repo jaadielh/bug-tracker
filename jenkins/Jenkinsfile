@@ -88,39 +88,6 @@ pipeline {
             }
         }
 
-        stage ('API Tests') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
-                    reuseNode true
-                    args '-u 0 --network=host'
-                }
-            }
-            steps {
-                dir("test-api") {
-                    sh """
-                        if [ ! -f package.json ]; then
-                            echo "ERROR: package.json not found in test-api"
-                            exit 1
-                        fi
-                        npm install
-                        npx playwright test
-                    """
-}
-            }
-    
-            post {
-                always {
-                    junit 'test-api/**/results.xml'
-                    publishHTML(target: [
-                        reportDir: 'tests-api/playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Playwright API Test Report'
-                    ])
-                }
-            }
-        }
-        
         stage('API Tests') {
             agent {
                 docker {
