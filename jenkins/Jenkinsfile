@@ -113,7 +113,7 @@ pipeline {
 
             post {
                 always {
-                    junit 'tests-api/test-results/results.xml'
+                    junit allowEmptyResults: true, testResults: 'tests-api/test-results/results.xml'
 
                     publishHTML(target: [
                         reportDir: 'tests-api/playwright-report',
