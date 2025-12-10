@@ -162,17 +162,45 @@ pipeline {
             }
         }
 
-        stage ('Performance Tests') {
+        stage('Performance Tests') {
             agent {
                 docker {
                     image 'grafana/k6:latest'
-                    reuseNode true
-                    args '--network=host -u root --entrypoint="'
+                    args '--network=host -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE}'
                 }
             }
+
             steps {
                 dir('test-perf') {
-                    sh 'k6 run script.js'
+                sh '''
+                    mkdir -p reports
+
+                    k6 run script.js \
+                    --summary-export=reports/summary.json
+                '''
+
+              // ✅ Install HTML + JUnit converters
+                sh '''
+                    apk add --no-cache nodejs npm
+                    npm install -g k6-to-junit k6-reporter
+                '''
+
+                  sh '''
+                    k6-to-junit reports/summary.json > reports/k6-junit.xml
+                    k6-reporter reports/summary.json --output reports/perf-report.html
+                '''
+                }
+            }
+
+            post {
+                always {
+                    junit 'test-perf/reports/k6-junit.xml'
+
+                    publishHTML([
+                        reportDir: 'test-perf/reports',
+                        reportFiles: 'perf-report.html',
+                        reportName: 'K6 Performance Report'
+                    ])
                 }
             }
         }
