@@ -124,5 +124,22 @@ pipeline {
             }
         }
 
+        stage ('E2E Tests') {
+            agent {
+                docker {
+                    image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
+                    reuseNode true
+                    args '-u 0 --network=host'
+                }
+            }
+
+            steps {
+                dir('test-e2e') {
+                    sh 'npm ci'
+                    sh 'npx playwright test'
+                }
+            }
+        }
+
     }
 }
