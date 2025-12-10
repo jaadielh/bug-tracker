@@ -1,221 +1,176 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
+  stages {
 
-        stage('Unit Tests Backend') {
-            agent {
-                docker {
-                    image 'golang:1.22-alpine'
-                    reuseNode true
-                }
-            }
-
-            steps {
-                dir('bugtracker-backend') {
-                    sh '''
-                        export GOCACHE=$WORKSPACE/.gocache
-                        mkdir -p $GOCACHE
-
-                        go install github.com/jstemmer/go-junit-report/v2@latest
-
-                        go test -v ./... | go-junit-report -set-exit-code > test-results.xml
-
-                        go test -coverprofile=coverage.out -covermode=atomic ./...
-                        go tool cover -html=coverage.out -o coverage.html
-
-                        mkdir -p reports
-                        mv coverage.html reports/
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit 'bugtracker-backend/test-results.xml'
-                    publishHTML(target: [
-                        reportDir: 'bugtracker-backend/reports',
-                        reportFiles: 'coverage.html',
-                        reportName: 'Backend Coverage Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
+    stage('Unit Tests Backend') {
+      agent {
+        docker { image 'golang:1.22-alpine'; reuseNode true }
+      }
+      steps {
+        dir('bugtracker-backend') {
+          sh '''
+            go install github.com/jstemmer/go-junit-report/v2@latest
+            go test -v ./... | go-junit-report -set-exit-code > test-results.xml
+            go test -coverprofile=coverage.out ./...
+            go tool cover -html=coverage.out -o coverage.html
+            mkdir -p reports && mv coverage.html reports/
+          '''
         }
-
-        stage('Unit Test - Frontend') {
-            agent {
-                docker {
-                    image 'node:20-alpine'
-                    reuseNode true
-                }
-            }
-
-            steps {
-                dir('bugtracker-frontend') {
-                    sh '''
-                      npm ci
-                      npm test
-
-                      mkdir -p reports
-                      rm -rf reports/coverage
-                      mv coverage reports/
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit 'bugtracker-frontend/reports/junit.xml'
-                    publishHTML(target: [
-                        reportDir: 'bugtracker-frontend/reports/coverage',
-                        reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
+      }
+      post {
+        always {
+          junit 'bugtracker-backend/test-results.xml'
+          publishHTML(target: [
+            reportDir: 'bugtracker-backend/reports',
+            reportFiles: 'coverage.html',
+            reportName: 'Backend Coverage',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+          ])
         }
-
-        stage('Launch Application') {
-            agent {
-                docker {
-                    image 'docker:27.5.1'
-                    reuseNode true
-                    args '-v /var/run/docker.sock:/var/run/docker.sock -u 0'
-                }
-            }
-            steps {
-                sh 'docker compose up --build -d'
-            }
-        }
-
-        stage('API Tests') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
-                    reuseNode true
-                    args '-u 0 --network=host'
-                }
-            }
-
-            steps {
-                dir('tests-api') {
-                    sh '''
-                        if [ ! -f package.json ]; then
-                            echo "ERROR: package.json not found in tests-api"
-                            exit 1
-                        fi
-
-                        npm install
-                        npx playwright test
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'tests-api/test-results/results.xml'
-
-                    publishHTML(target: [
-                        reportDir: 'tests-api/playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Playwright API Test Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
-        }
-
-        stage('E2E Tests') {
-            agent {
-                docker {
-                    image 'mcr.microsoft.com/playwright:v1.57.0-jammy'
-                    reuseNode true
-                    args '-u 0 --network=host'
-                }
-            }
-
-            steps {
-                dir('tests-e2e') {
-                    sh '''
-                        if [ ! -f package.json ]; then
-                            echo "ERROR: package.json not found in tests-e2e"
-                            exit 1
-                        fi
-
-                        npm install
-                        npx playwright test
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit allowEmptyResults: true, testResults: 'tests-e2e/**/results.xml'
-
-                    publishHTML(target: [
-                        reportDir: 'tests-e2e/playwright-report',
-                        reportFiles: 'index.html',
-                        reportName: 'Playwright E2E Test Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
-        }
-
-        stage('Performance Tests') {
-            agent {
-                docker {
-                    image 'grafana/k6:latest'
-                    args '--network=host -v ${WORKSPACE}:${WORKSPACE} -w ${WORKSPACE}'
-                }
-            }
-
-            steps {
-                dir('test-perf') {
-                    sh '''
-                        mkdir -p reports
-
-                        k6 run script.js \
-                        --summary-export=reports/summary.json
-                    '''
-
-                    sh '''
-                        apk add --no-cache nodejs npm
-                        npm install -g k6-to-junit k6-reporter
-                    '''
-
-                    sh '''
-                        k6-to-junit reports/summary.json > reports/k6-junit.xml
-                        k6-reporter reports/summary.json --output reports/perf-report.html
-                    '''
-                }
-            }
-
-            post {
-                always {
-                    junit 'test-perf/reports/k6-junit.xml'
-
-                    publishHTML(target: [
-                        reportDir: 'test-perf/reports',
-                        reportFiles: 'perf-report.html',
-                        reportName: 'K6 Performance Report',
-                        keepAll: true,
-                        alwaysLinkToLastBuild: true,
-                        allowMissing: false
-                    ])
-                }
-            }
-        }
-
+      }
     }
+
+    stage('Unit Tests Frontend') {
+      agent {
+        docker { image 'node:20-alpine'; reuseNode true }
+      }
+      steps {
+        dir('bugtracker-frontend') {
+          sh '''
+            npm ci
+            npm test
+            mkdir -p reports
+            mv coverage reports/
+          '''
+        }
+      }
+      post {
+        always {
+          junit 'bugtracker-frontend/reports/junit.xml'
+          publishHTML(target: [
+            reportDir: 'bugtracker-frontend/reports/coverage',
+            reportFiles: 'index.html',
+            reportName: 'Frontend Coverage',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+          ])
+        }
+      }
+    }
+
+    stage('Launch Application') {
+      agent {
+        docker {
+          image 'docker:27.5.1'
+          reuseNode true
+          args '-v /var/run/docker.sock:/var/run/docker.sock -u 0'
+        }
+      }
+      steps {
+        sh 'docker compose up --build -d'
+        sh 'sleep 20'
+      }
+    }
+
+    stage('Playwright API Tests') {
+      agent {
+        docker {
+          image 'mcr.microsoft.com/playwright:v1.57.0-jammy'
+          reuseNode true
+          args '-u 0 --network=host'
+        }
+      }
+      steps {
+        dir('tests-api') {
+          sh 'npm install'
+          sh 'npx playwright test'
+        }
+      }
+      post {
+        always {
+          junit 'tests-api/test-results/results.xml'
+          publishHTML(target: [
+            reportDir: 'tests-api/playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'API Test Report',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+          ])
+        }
+      }
+    }
+
+    stage('E2E Tests') {
+      agent {
+        docker {
+          image 'mcr.microsoft.com/playwright:v1.57.0-jammy'
+          reuseNode true
+          args '-u 0 --network=host'
+        }
+      }
+      steps {
+        dir('tests-e2e') {
+          sh 'npm install'
+          sh 'npx playwright test'
+        }
+      }
+      post {
+        always {
+          junit 'tests-e2e/**/results.xml'
+          publishHTML(target: [
+            reportDir: 'tests-e2e/playwright-report',
+            reportFiles: 'index.html',
+            reportName: 'E2E Test Report',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+          ])
+        }
+      }
+    }
+
+    stage('Performance Tests (K6 + Grafana)') {
+      agent {
+        docker {
+          image 'grafana/k6:latest'
+          args '--network=host'
+        }
+      }
+      steps {
+        dir('test-perf') {
+          sh '''
+            mkdir -p reports
+            k6 run script.js \
+              --out influxdb=http://localhost:8086/k6 \
+              --summary-export=reports/summary.json
+          '''
+
+          sh '''
+            apk add --no-cache nodejs npm
+            npm install -g k6-to-junit k6-reporter
+            k6-to-junit reports/summary.json > reports/k6-junit.xml
+            k6-reporter reports/summary.json --output reports/perf-report.html
+          '''
+        }
+      }
+      post {
+        always {
+          junit 'test-perf/reports/k6-junit.xml'
+          publishHTML(target: [
+            reportDir: 'test-perf/reports',
+            reportFiles: 'perf-report.html',
+            reportName: 'K6 Performance Report',
+            keepAll: true,
+            alwaysLinkToLastBuild: true,
+            allowMissing: false
+          ])
+        }
+      }
+    }
+  }
 }
