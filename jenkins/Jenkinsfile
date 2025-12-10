@@ -36,7 +36,10 @@ pipeline {
                     publishHTML(target: [
                         reportDir: 'bugtracker-backend/reports',
                         reportFiles: 'coverage.html',
-                        reportName: 'Backend Coverage Report'
+                        reportName: 'Backend Coverage Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
                     ])
                 }
             }
@@ -69,13 +72,16 @@ pipeline {
                     publishHTML(target: [
                         reportDir: 'bugtracker-frontend/reports/coverage',
                         reportFiles: 'index.html',
-                        reportName: 'Frontend Coverage Report'
+                        reportName: 'Frontend Coverage Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
                     ])
                 }
             }
         }
 
-        stage ('Launch Application') {
+        stage('Launch Application') {
             agent {
                 docker {
                     image 'docker:27.5.1'
@@ -88,7 +94,7 @@ pipeline {
             }
         }
 
-        stage ('API Tests') {
+        stage('API Tests') {
             agent {
                 docker {
                     image 'mcr.microsoft.com/playwright:v1.50.0-jammy'
@@ -118,7 +124,10 @@ pipeline {
                     publishHTML(target: [
                         reportDir: 'tests-api/playwright-report',
                         reportFiles: 'index.html',
-                        reportName: 'Playwright API Test Report'
+                        reportName: 'Playwright API Test Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
                     ])
                 }
             }
@@ -141,9 +150,7 @@ pipeline {
                             exit 1
                         fi
 
-                        # Use npm install unless you commit package-lock.json
                         npm install
-
                         npx playwright test
                     '''
                 }
@@ -156,7 +163,10 @@ pipeline {
                     publishHTML(target: [
                         reportDir: 'tests-e2e/playwright-report',
                         reportFiles: 'index.html',
-                        reportName: 'Playwright E2E Test Report'
+                        reportName: 'Playwright E2E Test Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
                     ])
                 }
             }
@@ -172,23 +182,22 @@ pipeline {
 
             steps {
                 dir('test-perf') {
-                sh '''
-                    mkdir -p reports
+                    sh '''
+                        mkdir -p reports
 
-                    k6 run script.js \
-                    --summary-export=reports/summary.json
-                '''
+                        k6 run script.js \
+                        --summary-export=reports/summary.json
+                    '''
 
-              // ✅ Install HTML + JUnit converters
-                sh '''
-                    apk add --no-cache nodejs npm
-                    npm install -g k6-to-junit k6-reporter
-                '''
+                    sh '''
+                        apk add --no-cache nodejs npm
+                        npm install -g k6-to-junit k6-reporter
+                    '''
 
-                  sh '''
-                    k6-to-junit reports/summary.json > reports/k6-junit.xml
-                    k6-reporter reports/summary.json --output reports/perf-report.html
-                '''
+                    sh '''
+                        k6-to-junit reports/summary.json > reports/k6-junit.xml
+                        k6-reporter reports/summary.json --output reports/perf-report.html
+                    '''
                 }
             }
 
@@ -196,10 +205,13 @@ pipeline {
                 always {
                     junit 'test-perf/reports/k6-junit.xml'
 
-                    publishHTML([
+                    publishHTML(target: [
                         reportDir: 'test-perf/reports',
                         reportFiles: 'perf-report.html',
-                        reportName: 'K6 Performance Report'
+                        reportName: 'K6 Performance Report',
+                        keepAll: true,
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
                     ])
                 }
             }
