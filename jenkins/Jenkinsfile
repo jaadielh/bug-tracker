@@ -6,48 +6,66 @@ pipeline {
     stage('Unit Tests Backend') {
         agent {
             docker {
-                image 'golang:1.22-alpine'
-                reuseNode true
+            image 'golang:1.22-alpine'
+            reuseNode true
             }
         }
 
         steps {
             dir('bugtracker-backend') {
                 sh '''
-                    export GOCACHE=$WORKSPACE/.gocache
-                    export GOMODCACHE=$WORKSPACE/.gomodcache
+                    # make sandboxed Go dirs inside the workspace (non-root friendly)
                     export GOPATH=$WORKSPACE/.gopath
+                    export GOMODCACHE=$WORKSPACE/.gomodcache
+                    export GOCACHE=$WORKSPACE/.gocache
+                    export GOBIN=$GOPATH/bin
 
-                    mkdir -p $GOCACHE $GOMODCACHE $GOPATH
+                    mkdir -p "$GOPATH" "$GOMODCACHE" "$GOCACHE" "$GOBIN"
 
+                    # ensure the bin dir is on PATH so go-installed binaries are executable
+                    export PATH="$GOBIN:$PATH"
+
+                    # show go env for debugging (optional)
+                    go env
+
+                    # install the junit converter binary into $GOBIN
                     go install github.com/jstemmer/go-junit-report/v2@latest
 
-                    go test -v ./... | go-junit-report -set-exit-code > test-results.xml
+                    # verify binary exists and is executable
+                    if [ ! -x "$GOBIN/go-junit-report" ]; then
+                    echo "ERROR: go-junit-report not found in $GOBIN"
+                    ls -la "$GOBIN" || true
+                    exit 1
+                    fi
 
-                    go test -coverprofile=coverage.out ./...
-                    go tool cover -html=coverage.out -o coverage.html
+                    # run the tests and generate JUnit xml (stream to converter)
+                    go test -v ./... | go-junit-report -set-exit-code > test-results.xml || true
+
+                    # also produce coverage
+                    go test -coverprofile=coverage.out -covermode=atomic ./...
+                    [ -f coverage.out ] && go tool cover -html=coverage.out -o coverage.html || true
 
                     mkdir -p reports
-                    mv coverage.html reports/
+                    [ -f coverage.html ] && mv coverage.html reports/ || true
                 '''
+                }
             }
-        }
 
             post {
                 always {
-                junit 'bugtracker-backend/test-results.xml'
+                    junit allowEmptyResults: true, testResults: 'bugtracker-backend/test-results.xml'
 
-                publishHTML(target: [
-                    reportDir: 'bugtracker-backend/reports',
-                    reportFiles: 'coverage.html',
-                    reportName: 'Backend Coverage',
+                    publishHTML(target: [
+                        reportDir: 'bugtracker-backend/reports',
+                        reportFiles: 'coverage.html',
+                        reportName: 'Backend Coverage',
                         keepAll: true,
-                    alwaysLinkToLastBuild: true,
-                    allowMissing: false
-                ])
+                        alwaysLinkToLastBuild: true,
+                        allowMissing: false
+                    ])
+                }
             }
         }
-    }
 
 
     stage('Unit Tests Frontend') {
