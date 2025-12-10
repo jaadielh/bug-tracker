@@ -4,34 +4,51 @@ pipeline {
   stages {
 
     stage('Unit Tests Backend') {
-      agent {
-        docker { image 'golang:1.22-alpine'; reuseNode true }
-      }
-      steps {
-        dir('bugtracker-backend') {
-          sh '''
-            go install github.com/jstemmer/go-junit-report/v2@latest
-            go test -v ./... | go-junit-report -set-exit-code > test-results.xml
-            go test -coverprofile=coverage.out ./...
-            go tool cover -html=coverage.out -o coverage.html
-            mkdir -p reports && mv coverage.html reports/
-          '''
+        agent {
+            docker {
+                image 'golang:1.22-alpine'
+                reuseNode true
+            }
         }
-      }
-      post {
-        always {
-          junit 'bugtracker-backend/test-results.xml'
-          publishHTML(target: [
-            reportDir: 'bugtracker-backend/reports',
-            reportFiles: 'coverage.html',
-            reportName: 'Backend Coverage',
-            keepAll: true,
-            alwaysLinkToLastBuild: true,
-            allowMissing: false
-          ])
+
+        steps {
+            dir('bugtracker-backend') {
+                sh '''
+                    export GOCACHE=$WORKSPACE/.gocache
+                    export GOMODCACHE=$WORKSPACE/.gomodcache
+                    export GOPATH=$WORKSPACE/.gopath
+
+                    mkdir -p $GOCACHE $GOMODCACHE $GOPATH
+
+                    go install github.com/jstemmer/go-junit-report/v2@latest
+
+                    go test -v ./... | go-junit-report -set-exit-code > test-results.xml
+
+                    go test -coverprofile=coverage.out ./...
+                    go tool cover -html=coverage.out -o coverage.html
+
+                    mkdir -p reports
+                    mv coverage.html reports/
+                '''
+            }
         }
-      }
+
+            post {
+                always {
+                junit 'bugtracker-backend/test-results.xml'
+
+                publishHTML(target: [
+                    reportDir: 'bugtracker-backend/reports',
+                    reportFiles: 'coverage.html',
+                    reportName: 'Backend Coverage',
+                        keepAll: true,
+                    alwaysLinkToLastBuild: true,
+                    allowMissing: false
+                ])
+            }
+        }
     }
+
 
     stage('Unit Tests Frontend') {
       agent {
