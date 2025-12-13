@@ -40,7 +40,9 @@ jobs:
       - name: Execute Frontend Unit Tests
         working-directory: ./bugtracker-frontend
         run: |
+          npm install --save-dev jest-junit
           npm ci
+          JEST_JUNIT_OUTPUT_NAME=test-results.xml
           npm test
 
       - name: Publish Frontend Test Results
