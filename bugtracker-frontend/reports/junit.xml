@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuites name="jest tests" tests="60" failures="1" errors="0" time="4.827">
-  <testsuite name="src\api\bugs.test.ts" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="0.914" tests="14">
-    <testcase classname="Bug API › getBugs" name="should fetch bugs successfully" time="0.022">
+<testsuites name="jest tests" tests="60" failures="1" errors="0" time="4.802">
+  <testsuite name="src\api\bugs.test.ts" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="0.931" tests="14">
+    <testcase classname="Bug API › getBugs" name="should fetch bugs successfully" time="0.032">
     </testcase>
-    <testcase classname="Bug API › getBugs" name="should handle network errors when fetching bugs" time="0.008">
+    <testcase classname="Bug API › getBugs" name="should handle network errors when fetching bugs" time="0.01">
     </testcase>
     <testcase classname="Bug API › getBugs" name="should handle invalid JSON responses when fetching bugs" time="0.004">
     </testcase>
@@ -23,99 +23,99 @@
     </testcase>
     <testcase classname="Bug API › updateBug" name="should handle invalid JSON responses when updating a bug" time="0.001">
     </testcase>
-    <testcase classname="Bug API › deleteBug" name="should delete a bug successfully" time="0.001">
+    <testcase classname="Bug API › deleteBug" name="should delete a bug successfully" time="0">
     </testcase>
-    <testcase classname="Bug API › deleteBug" name="should handle not found error when deleting a bug" time="0">
+    <testcase classname="Bug API › deleteBug" name="should handle not found error when deleting a bug" time="0.001">
     </testcase>
     <testcase classname="Bug API › deleteBug" name="should handle network errors when deleting a bug" time="0">
     </testcase>
   </testsuite>
-  <testsuite name="src\components\EditBugModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="1.295" tests="6">
-    <testcase classname="EditBugModal" name="renders nothing when isOpen is false" time="0.032">
+  <testsuite name="src\components\EditBugModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="1.29" tests="6">
+    <testcase classname="EditBugModal" name="renders nothing when isOpen is false" time="0.033">
     </testcase>
-    <testcase classname="EditBugModal" name="renders modal content when isOpen is true" time="0.028">
+    <testcase classname="EditBugModal" name="renders modal content when isOpen is true" time="0.027">
     </testcase>
-    <testcase classname="EditBugModal" name="calls onClose when Cancel button is clicked" time="0.013">
+    <testcase classname="EditBugModal" name="calls onClose when Cancel button is clicked" time="0.012">
     </testcase>
-    <testcase classname="EditBugModal" name="updates form fields when input values change" time="0.023">
+    <testcase classname="EditBugModal" name="updates form fields when input values change" time="0.011">
     </testcase>
     <testcase classname="EditBugModal" name="calls onSubmit with updated values when form is submitted" time="0.009">
     </testcase>
-    <testcase classname="EditBugModal" name="updates priority and status when select values change" time="0.009">
+    <testcase classname="EditBugModal" name="updates priority and status when select values change" time="0.008">
     </testcase>
   </testsuite>
-  <testsuite name="src\components\DeleteConfirmationModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="1.317" tests="4">
-    <testcase classname="DeleteConfirmationModal" name="should not render the modal when isOpen is false" time="0.039">
+  <testsuite name="src\components\Notification.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="1.33" tests="7">
+    <testcase classname="Notification" name="should render with the provided message" time="0.05">
     </testcase>
-    <testcase classname="DeleteConfirmationModal" name="should render the modal when isOpen is true" time="0.047">
+    <testcase classname="Notification" name="should call onClose after 5 seconds" time="0.008">
     </testcase>
-    <testcase classname="DeleteConfirmationModal" name="should call onClose when the Cancel button is clicked" time="0.032">
+    <testcase classname="Notification" name="should call onClose when close button is clicked" time="0.066">
     </testcase>
-    <testcase classname="DeleteConfirmationModal" name="should call onConfirm when the Delete button is clicked" time="0.012">
+    <testcase classname="Notification" name="should apply success styles by default" time="0.005">
     </testcase>
-  </testsuite>
-  <testsuite name="src\components\Notification.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="1.338" tests="7">
-    <testcase classname="Notification" name="should render with the provided message" time="0.054">
-    </testcase>
-    <testcase classname="Notification" name="should call onClose after 5 seconds" time="0.022">
-    </testcase>
-    <testcase classname="Notification" name="should call onClose when close button is clicked" time="0.06">
-    </testcase>
-    <testcase classname="Notification" name="should apply success styles by default" time="0.004">
-    </testcase>
-    <testcase classname="Notification" name="should apply error styles when type is error" time="0.003">
+    <testcase classname="Notification" name="should apply error styles when type is error" time="0.004">
     </testcase>
     <testcase classname="Notification" name="should fade out before closing" time="0.003">
     </testcase>
-    <testcase classname="Notification" name="should cleanup timers on unmount" time="0.003">
+    <testcase classname="Notification" name="should cleanup timers on unmount" time="0.002">
     </testcase>
   </testsuite>
-  <testsuite name="src\components\DeleteBugButton.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:39" time="0.537" tests="3">
-    <testcase classname="DeleteBugButton" name="should render the delete button" time="0.058">
+  <testsuite name="src\components\DeleteConfirmationModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="1.298" tests="4">
+    <testcase classname="DeleteConfirmationModal" name="should not render the modal when isOpen is false" time="0.032">
     </testcase>
-    <testcase classname="DeleteBugButton" name="should call onDelete when the delete button is clicked" time="0.011">
+    <testcase classname="DeleteConfirmationModal" name="should render the modal when isOpen is true" time="0.041">
     </testcase>
-    <testcase classname="DeleteBugButton" name="should log an error when the delete request fails" time="0.006">
+    <testcase classname="DeleteConfirmationModal" name="should call onClose when the Cancel button is clicked" time="0.03">
+    </testcase>
+    <testcase classname="DeleteConfirmationModal" name="should call onConfirm when the Delete button is clicked" time="0.014">
     </testcase>
   </testsuite>
-  <testsuite name="src\components\BugList.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="2.577" tests="12">
-    <testcase classname="BugList › Initial Rendering" name="should render bug list after loading" time="0.104">
+  <testsuite name="src\components\DeleteBugButton.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:55" time="0.53" tests="3">
+    <testcase classname="DeleteBugButton" name="should render the delete button" time="0.054">
     </testcase>
-    <testcase classname="BugList › Initial Rendering" name="should show error message if bugs fetch fails" time="0.033">
+    <testcase classname="DeleteBugButton" name="should call onDelete when the delete button is clicked" time="0.01">
     </testcase>
-    <testcase classname="BugList › Bug Operations" name="should open add bug modal when clicking Add New Bug" time="0.093">
+    <testcase classname="DeleteBugButton" name="should log an error when the delete request fails" time="0.007">
     </testcase>
-    <testcase classname="BugList › Bug Operations" name="should handle creating a new bug" time="0.425">
+  </testsuite>
+  <testsuite name="src\components\BugList.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="2.4" tests="12">
+    <testcase classname="BugList › Initial Rendering" name="should render bug list after loading" time="0.095">
     </testcase>
-    <testcase classname="BugList › Bug Operations" name="should handle editing a bug" time="0.358">
+    <testcase classname="BugList › Initial Rendering" name="should show error message if bugs fetch fails" time="0.025">
     </testcase>
-    <testcase classname="BugList › Bug Operations" name="should handle deleting a bug" time="0.082">
+    <testcase classname="BugList › Bug Operations" name="should open add bug modal when clicking Add New Bug" time="0.096">
     </testcase>
-    <testcase classname="BugList › Notifications" name="should show success notification after creating bug" time="0.053">
+    <testcase classname="BugList › Bug Operations" name="should handle creating a new bug" time="0.345">
+    </testcase>
+    <testcase classname="BugList › Bug Operations" name="should handle editing a bug" time="0.311">
+    </testcase>
+    <testcase classname="BugList › Bug Operations" name="should handle deleting a bug" time="0.079">
+    </testcase>
+    <testcase classname="BugList › Notifications" name="should show success notification after creating bug" time="0.041">
     </testcase>
     <testcase classname="BugList › Notifications" name="should show success notification after deleting bug" time="0.032">
     </testcase>
-    <testcase classname="BugList › Status and Priority Display" name="should display correct status indicators" time="0.033">
+    <testcase classname="BugList › Status and Priority Display" name="should display correct status indicators" time="0.016">
     </testcase>
-    <testcase classname="BugList › Status and Priority Display" name="should display correct priority indicators" time="0.029">
+    <testcase classname="BugList › Status and Priority Display" name="should display correct priority indicators" time="0.03">
     </testcase>
-    <testcase classname="BugList" name="displays the correct version number" time="0.021">
+    <testcase classname="BugList" name="displays the correct version number" time="0.014">
     </testcase>
     <testcase classname="BugList" name="displays the version number in the header" time="0.007">
     </testcase>
   </testsuite>
-  <testsuite name="src\components\CommentSection.test.tsx" errors="0" failures="1" skipped="0" timestamp="2025-12-13T01:13:38" time="2.759" tests="6">
-    <testcase classname="CommentSection" name="should render the comment section with existing comments" time="0.095">
+  <testsuite name="src\components\CommentSection.test.tsx" errors="0" failures="1" skipped="0" timestamp="2025-12-13T01:40:54" time="2.727" tests="6">
+    <testcase classname="CommentSection" name="should render the comment section with existing comments" time="0.071">
     </testcase>
-    <testcase classname="CommentSection" name="should submit a new comment" time="0.712">
+    <testcase classname="CommentSection" name="should submit a new comment" time="0.673">
     </testcase>
-    <testcase classname="CommentSection" name="should handle error when submitting a comment" time="0.617">
+    <testcase classname="CommentSection" name="should handle error when submitting a comment" time="0.626">
     </testcase>
-    <testcase classname="CommentSection" name="should render empty comments message when no comments are provided" time="0.004">
+    <testcase classname="CommentSection" name="should render empty comments message when no comments are provided" time="0.014">
     </testcase>
-    <testcase classname="CommentSection" name="should disable the submit button when form fields are empty" time="0.003">
+    <testcase classname="CommentSection" name="should disable the submit button when form fields are empty" time="0.011">
     </testcase>
-    <testcase classname="CommentSection" name="should display the correct timestamp for each comment" time="0.005">
+    <testcase classname="CommentSection" name="should display the correct timestamp for each comment" time="0.01">
       <failure>TestingLibraryElementError: Unable to find an element with the text: /6\/10\/23.*(10|11):00:00/. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
 
 Ignored nodes: comments, script, style
@@ -226,16 +226,16 @@ Ignored nodes: comments, script, style
     at Object.worker (C:\Users\JDL\Documents\bugtracker\bug-tracker\bugtracker-frontend\node_modules\jest-runner\build\testWorker.js:106:12)</failure>
     </testcase>
   </testsuite>
-  <testsuite name="src\components\AddBugModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:13:38" time="3.087" tests="8">
-    <testcase classname="AddBugModal" name="should not render when isOpen is false" time="0.047">
+  <testsuite name="src\components\AddBugModal.test.tsx" errors="0" failures="0" skipped="0" timestamp="2025-12-13T01:40:54" time="3.062" tests="8">
+    <testcase classname="AddBugModal" name="should not render when isOpen is false" time="0.033">
     </testcase>
-    <testcase classname="AddBugModal" name="should render the modal when isOpen is true" time="0.032">
+    <testcase classname="AddBugModal" name="should render the modal when isOpen is true" time="0.026">
     </testcase>
-    <testcase classname="AddBugModal" name="should handle form submission with correct data" time="0.635">
+    <testcase classname="AddBugModal" name="should handle form submission with correct data" time="0.631">
     </testcase>
     <testcase classname="AddBugModal" name="should close modal when Cancel button is clicked" time="0.013">
     </testcase>
-    <testcase classname="AddBugModal" name="should update form data when inputs change" time="0.508">
+    <testcase classname="AddBugModal" name="should update form data when inputs change" time="0.53">
     </testcase>
     <testcase classname="AddBugModal" name="should not submit form with empty required fields" time="0.537">
     </testcase>
