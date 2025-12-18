@@ -3,14 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint",
-    "test": "jest --coverage --coverageReporters='text-summary' --coverageReporters='text' --coverageReporters='html' --reporters=default --reporters=jest-junit",
-    "test:watch": "jest --watch",
-    "test:integration": "playwright test"
-  },
+  "test": "jest --coverage",
+  "test:watch": "jest --watch",
+  "test:integration": "playwright test"
+}
+,
   "dependencies": {
     "next": "^15.1.4",
     "react": "^19.0.0",
@@ -37,13 +34,4 @@
     "ts-node": "^10.9.2",
     "typescript": "^5"
   },
-  "jest-junit": {
-    "outputDirectory": "./reports",
-    "outputName": "junit.xml",
-    "ancestorSeparator": " › ",
-    "uniqueOutputName": "false",
-    "suiteNameTemplate": "{filepath}",
-    "classNameTemplate": "{classname}",
-    "titleTemplate": "{title}"
-  }
-}
+ }
