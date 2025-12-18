@@ -52,10 +52,12 @@ jobs:
         working-directory: ./bugtracker-frontend
         run: npm ci
 
+      # 🔥 THIS IS THE MISSING STEP
+      - name: Prepare test report directory
+        run: mkdir -p bugtracker-frontend/reports
+
       - name: Execute Frontend Unit Tests
         working-directory: ./bugtracker-frontend
-        env:
-          JEST_JUNIT_OUTPUT_NAME: test-results.xml
         run: npm test
 
       - name: Publish Frontend Test Results
@@ -66,4 +68,3 @@ jobs:
           path: bugtracker-frontend/reports/junit.xml
           reporter: jest-junit
           fail-on-error: true
-
