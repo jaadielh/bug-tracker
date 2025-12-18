@@ -22,40 +22,41 @@ jobs:
       - name: Install go-junit-report
         run: go install github.com/jstemmer/go-junit-report/v2@latest
 
-
       - name: Execute Backend Unit Tests
         working-directory: ./bugtracker-backend
         run: |
           go test -v ./... | go-junit-report -set-exit-code > test-results.xml
 
-      - name: Publish  backend test Results
+      - name: Publish Backend Test Results
         uses: dorny/test-reporter@v1
-        if:  always ()
+        if: always()
         with:
           name: Backend Unit Tests Report
           path: bugtracker-backend/test-results.xml
-          reporter: jest-junit
+          reporter: java-junit
 
   unit-tests-frontend:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        with: 
+        with:
           node-version: "20"
           cache: "npm"
           cache-dependency-path: bugtracker-frontend/package-lock.json
 
+      - name: Install dependencies
+        working-directory: ./bugtracker-frontend
+        run: npm ci
+
       - name: Execute Frontend Unit Tests
         working-directory: ./bugtracker-frontend
-        run: |
-          npm install --save-dev jest-junit
-          npm ci
-          JEST_JUNIT_OUTPUT_NAME=test-results.xml
-          npm test
+        env:
+          JEST_JUNIT_OUTPUT_NAME: test-results.xml
+        run: npm test
 
       - name: Publish Frontend Test Results
         uses: dorny/test-reporter@v1
