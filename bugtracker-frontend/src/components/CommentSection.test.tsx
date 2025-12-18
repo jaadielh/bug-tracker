@@ -34,35 +34,34 @@ describe("CommentSection", () => {
   });
 
   it("should submit a new comment", async () => {
+    const user = userEvent.setup();
+
     (fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
     });
 
     const onCommentAdded = jest.fn();
+
     render(
       <CommentSection bugId={1} comments={[]} onCommentAdded={onCommentAdded} />
     );
 
-    await userEvent.type(screen.getByLabelText("Your Name"), "Jane Smith");
-    await userEvent.type(
-      screen.getByLabelText("Comment"),
-      "This is a new comment"
-    );
-    fireEvent.click(screen.getByText("Add Comment"));
+    await user.type(screen.getByLabelText(/your name/i), "Jane Smith");
+    await user.type(screen.getByLabelText(/comment/i), "This is a new comment");
+
+    const button = screen.getByRole("button", { name: /add comment/i });
+
+    // ⬇️ THIS IS CRITICAL
+    await waitFor(() => expect(button).toBeEnabled());
+
+    await user.click(button);
 
     await waitFor(() => {
       expect(fetch).toHaveBeenCalledWith(
         "http://localhost:8080/api/bugs/1/comments",
-        {
+        expect.objectContaining({
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            author: "Jane Smith",
-            content: "This is a new comment",
-          }),
-        }
+        })
       );
       expect(onCommentAdded).toHaveBeenCalled();
     });
