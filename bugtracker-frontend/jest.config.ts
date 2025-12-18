@@ -19,8 +19,8 @@ const config: Config = {
     [
       "jest-junit",
       {
-        outputDirectory: "<rootDir>",
-        outputName: "test-results.xml",
+        outputDirectory: "reports",
+        outputName: "junit.xml",
       },
     ],
   ],
