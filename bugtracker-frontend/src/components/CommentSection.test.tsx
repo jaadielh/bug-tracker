@@ -106,7 +106,9 @@ describe("CommentSection", () => {
     render(
       <CommentSection bugId={1} comments={[]} onCommentAdded={jest.fn()} />
     );
-    expect(screen.getByText("Add Comment")).toBeDisabled();
+
+    const button = screen.getByRole("button", { name: /add comment/i });
+    expect(button).toBeDisabled();
   });
 
   it("should display the timestamp for each comment", () => {
