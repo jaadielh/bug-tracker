@@ -20,7 +20,7 @@ jobs:
           cache-dependency-path: bugtracker-backend/go.sum
 
       - name: Install go-junit-report
-        run: go install github.com/jstemmer/go-junit-report/v2@larest
+        run: go install github.com/jstemmer/go-junit-report/v2@latest
 
 
       - name: Execute Backend Unit Tests
